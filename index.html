@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Student Result Manager — Average, Grade & Rank</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -311,13 +313,13 @@
       <span></span><span></span><span></span>
     </button>
     <div class="menu-panel" id="menuPanel">
-      <a href="https://heni-john-portfolio.vercel.app/" target="_blank"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9z"/></svg> Portfolio</a>
+      <a href="https://heni-john-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9z"/></svg> Portfolio</a>
       <a href="#howto-section" onclick="closeMenu()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11v5c0 1.5 3.5 3 8 3s8-1.5 8-3v-5"/></svg> How It Works</a>
       <a href="#about-section" onclick="closeMenu()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.9" fill="currentColor" stroke="none"/></svg> About This Tool</a>
       <div class="menu-divider"></div>
-      <a href="https://t.me/Heni_John" target="_blank"><svg viewBox="0 0 240 240" width="16" height="16" fill="currentColor" style="flex-shrink:0"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path fill="#fff" d="M175.9 82.1l-19.8 93.4c-1.5 6.7-5.4 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.2 3l2.2-31.3 57-51.5c2.5-2.2-.5-3.4-3.8-1.2l-70.5 44.4-30.4-9.5c-6.6-2.1-6.7-6.6 1.4-9.7l118.9-45.8c5.5-2 10.3 1.3 8.3 9.3z"/></svg> Contact on Telegram</a>
-      <a href="https://github.com/HeniJohn" target="_blank"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="flex-shrink:0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.3.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg> GitHub</a>
-      <a href="#" target="_blank"><svg viewBox="0 0 24 24" width="16" height="16" style="flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="4" fill="#FF0000"/><path d="M9.8 8.4v7.2L15.8 12z" fill="#fff"/></svg> YouTube</a>
+      <a href="https://t.me/Heni_John" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 240 240" width="16" height="16" fill="currentColor" style="flex-shrink:0"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path fill="#fff" d="M175.9 82.1l-19.8 93.4c-1.5 6.7-5.4 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.2 3l2.2-31.3 57-51.5c2.5-2.2-.5-3.4-3.8-1.2l-70.5 44.4-30.4-9.5c-6.6-2.1-6.7-6.6 1.4-9.7l118.9-45.8c5.5-2 10.3 1.3 8.3 9.3z"/></svg> Contact on Telegram</a>
+      <a href="https://github.com/HeniJohn" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="flex-shrink:0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.3.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg> GitHub</a>
+      <a href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" style="flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="4" fill="#FF0000"/><path d="M9.8 8.4v7.2L15.8 12z" fill="#fff"/></svg> YouTube</a>
     </div>
   </div>
 </div>
@@ -462,11 +464,11 @@
         <div class="dev-role">Software Developer · Python, Telegram Bots & Android</div>
       </div>
       <div class="socials">
-        <a href="https://henokyonatan.vercel.app/" target="_blank"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9z"/></svg> Portfolio</a>
-        <a href="https://t.me/Heni_John" target="_blank"><svg viewBox="0 0 240 240" width="15" height="15" fill="currentColor" style="flex-shrink:0"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path fill="#fff" d="M175.9 82.1l-19.8 93.4c-1.5 6.7-5.4 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.2 3l2.2-31.3 57-51.5c2.5-2.2-.5-3.4-3.8-1.2l-70.5 44.4-30.4-9.5c-6.6-2.1-6.7-6.6 1.4-9.7l118.9-45.8c5.5-2 10.3 1.3 8.3 9.3z"/></svg> Telegram</a>
-        <a href="https://github.com/HeniJohn" target="_blank"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="flex-shrink:0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.3.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg> GitHub</a>
-        <a href="#" target="_blank"><svg viewBox="0 0 24 24" width="15" height="15" style="flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="4" fill="#FF0000"/><path d="M9.8 8.4v7.2L15.8 12z" fill="#fff"/></svg> YouTube</a>
-        <a href="#" target="_blank"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg> Instagram</a>
+        <a href="https://heni-john-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9z"/></svg> Portfolio</a>
+        <a href="https://t.me/Heni_John" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 240 240" width="15" height="15" fill="currentColor" style="flex-shrink:0"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path fill="#fff" d="M175.9 82.1l-19.8 93.4c-1.5 6.7-5.4 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.2 3l2.2-31.3 57-51.5c2.5-2.2-.5-3.4-3.8-1.2l-70.5 44.4-30.4-9.5c-6.6-2.1-6.7-6.6 1.4-9.7l118.9-45.8c5.5-2 10.3 1.3 8.3 9.3z"/></svg> Telegram</a>
+        <a href="https://github.com/HeniJohn" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="flex-shrink:0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.3.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg> GitHub</a>
+        <a href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" style="flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="4" fill="#FF0000"/><path d="M9.8 8.4v7.2L15.8 12z" fill="#fff"/></svg> YouTube</a>
+        <a href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg> Instagram</a>
       </div>
     </div>
   </div>
@@ -493,6 +495,14 @@ let mode = "single";
 
 let uid = 1;
 const nextId = () => uid++;
+
+// Escapes user-entered text before it is inserted into innerHTML, preventing
+// stored XSS if a student/subject name contains HTML or script content.
+function escapeHTML(str){
+  return String(str ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[ch]));
+}
 
 // Students are a SHARED roster (same students across both semesters).
 // Each student stores scores per semester: scores[1] = {subjectId: value}, scores[2] = {...}
@@ -590,7 +600,7 @@ function renderLegend(){
     return `
       <div class="chip edit-chip">
         <span class="dot" style="background:${g.color}"></span>
-        <input class="grade-letter-input" value="${g.grade}"
+        <input class="grade-letter-input" value="${escapeHTML(g.grade)}"
           onchange="editGradeLetter(${i}, this.value)" />
         <span class="range-label">${range}</span>
         <input class="grade-min-input" type="number" min="0" max="100" value="${g.min}"
@@ -681,7 +691,7 @@ function renderSemesterTable(sem, headRowId, tbodyId, rows){
     subs.map(s => `
       <th>
         <div style="display:flex;align-items:center;gap:4px;justify-content:center;">
-          <input class="subject-input" value="${s.name}" onchange="renameSubject(${sem}, ${s.id}, this.value)" />
+          <input class="subject-input" value="${escapeHTML(s.name)}" onchange="renameSubject(${sem}, ${s.id}, this.value)" />
           <button class="icon-btn" onclick="removeSubject(${sem}, ${s.id})" title="Remove subject">✕</button>
         </div>
       </th>`).join("") +
@@ -702,7 +712,7 @@ function renderSemesterTable(sem, headRowId, tbodyId, rows){
       const g = getGrade(avg);
       extraCells = `
         <td style="font-weight:700;">${avg !== null ? avg.toFixed(1) : "-"}</td>
-        <td><span class="grade-badge" style="background:${g.color}">${g.grade}</span></td>
+        <td><span class="grade-badge" style="background:${g.color}">${escapeHTML(g.grade)}</span></td>
         <td style="font-weight:600;">${medal(stu.rank)}</td>
         <td><button class="icon-btn" onclick="removeStudent(${stu.id})" title="Remove student">🗑</button></td>`;
     } else {
@@ -713,7 +723,7 @@ function renderSemesterTable(sem, headRowId, tbodyId, rows){
 
     return `
       <tr>
-        <td><input class="name-input" value="${stu.name}" onchange="renameStudent(${stu.id}, this.value)" /></td>
+        <td><input class="name-input" value="${escapeHTML(stu.name)}" onchange="renameStudent(${stu.id}, this.value)" /></td>
         ${scoreCells}
         ${extraCells}
       </tr>`;
@@ -726,11 +736,11 @@ function renderOverall(rows){
     const g = getGrade(stu.overall);
     return `
       <tr>
-        <td style="text-align:left; font-weight:600;">${stu.name}</td>
+        <td style="text-align:left; font-weight:600;">${escapeHTML(stu.name)}</td>
         <td>${stu.avg1 !== null ? stu.avg1.toFixed(1) : "-"}</td>
         <td>${stu.avg2 !== null ? stu.avg2.toFixed(1) : "-"}</td>
         <td style="font-weight:700;">${stu.overall !== null ? stu.overall.toFixed(1) : "-"}</td>
-        <td><span class="grade-badge" style="background:${g.color}">${g.grade}</span></td>
+        <td><span class="grade-badge" style="background:${g.color}">${escapeHTML(g.grade)}</span></td>
         <td style="font-weight:600;">${medal(stu.rank)}</td>
       </tr>`;
   }).join("");
