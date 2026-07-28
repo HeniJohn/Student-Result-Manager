@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.googleapis.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Student Result Manager — Average, Grade & Rank</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -356,15 +356,161 @@
     body{ background:#fff !important; padding:0; color:#1B1029; }
     .top-bar, .menu-panel, .mode-select, .search-wrap, .actions,
     .howto, .about, footer, .saved-badge, .icon-btn, .tier-remove,
-    .note{ display:none !important; }
+    .note, .auth-overlay, .user-bar{ display:none !important; }
     .panel{ box-shadow:none; border-color:#ccc; break-inside:avoid; }
     input{ border:none; color:#1B1029; background:transparent; }
     th, td{ color:#1B1029; }
     .sem-panel-label{ color:#1B1029 !important; }
   }
+
+  /* Auth overlay (login / sign up / forgot password) */
+  .auth-overlay{
+    position:fixed; inset:0; z-index:100;
+    display:flex; align-items:flex-start; justify-content:center;
+    overflow-y:auto;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255,122,89,0.10), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(126,182,224,0.08), transparent 45%),
+      linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    padding:40px 20px 30px;
+  }
+  .auth-scroll{
+    width:100%; max-width:420px; margin:0 auto;
+    display:flex; flex-direction:column; gap:22px;
+  }
+  .auth-box{
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:16px;
+    padding:30px 24px;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,0.5);
+  }
+  .auth-title{
+    font-family:'Sora',sans-serif; font-weight:800; font-size:22px;
+    margin:0 0 6px; text-align:center;
+    background:linear-gradient(90deg, var(--coral), var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .auth-sub{ text-align:center; color:var(--muted); font-size:13px; margin:0 0 22px; }
+  .auth-input{
+    width:100%; margin-bottom:10px; padding:11px 12px;
+    font-size:14px; border-radius:9px; display:block;
+  }
+  .auth-btn{ width:100%; justify-content:center; margin-top:4px; }
+  .auth-links{
+    display:flex; justify-content:space-between; margin-top:16px;
+    font-size:12px; flex-wrap:wrap; gap:8px;
+  }
+  .auth-links a{ color:var(--blue); text-decoration:none; }
+  .auth-links a:hover{ text-decoration:underline; }
+  .auth-error{
+    background:rgba(224,107,107,0.15); color:var(--red);
+    border:1px solid rgba(224,107,107,0.3);
+    padding:9px 12px; border-radius:8px; font-size:12.5px; margin-bottom:14px;
+  }
+  .auth-msg{
+    background:rgba(127,216,166,0.15); color:var(--green);
+    border:1px solid rgba(127,216,166,0.3);
+    padding:9px 12px; border-radius:8px; font-size:12.5px; margin-bottom:14px;
+  }
+  .auth-loading{ text-align:center; color:var(--muted); font-size:12.5px; margin-top:12px; }
+
+  .landing-desc{
+    text-align:center; color:var(--muted); font-size:13.5px;
+    line-height:1.7; margin:0; padding:0 6px;
+  }
+  .landing-features{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  }
+  .landing-features .chip{ font-size:12px; }
+  .landing-social{
+    display:flex; flex-wrap:wrap; gap:9px; justify-content:center;
+    padding-bottom:10px;
+  }
+
+  .user-bar{
+    max-width:960px; margin:0 auto 10px;
+    display:none; align-items:center; justify-content:flex-end; gap:10px;
+    font-size:12.5px; color:var(--muted);
+  }
+  .user-bar button{ padding:6px 12px; font-size:12px; }
 </style>
 </head>
 <body>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-scroll">
+  <div class="auth-box">
+    <h1 class="auth-title">Student Result Manager</h1>
+    <p class="auth-sub">Sign in to save and sync your results</p>
+
+    <div class="auth-error" id="authError" style="display:none;"></div>
+    <div class="auth-msg" id="authMsg" style="display:none;"></div>
+
+    <div id="loginForm">
+      <input type="email" class="auth-input" id="loginEmail" placeholder="Email" autocomplete="email" />
+      <input type="password" class="auth-input" id="loginPassword" placeholder="Password" autocomplete="current-password" />
+      <button class="btn auth-btn" onclick="doLogin()">Log In</button>
+      <div class="auth-links">
+        <a href="#" onclick="showAuthView('forgot'); return false;">Forgot password?</a>
+        <a href="#" onclick="showAuthView('signup'); return false;">Create account</a>
+      </div>
+    </div>
+
+    <div id="signupForm" style="display:none;">
+      <input type="email" class="auth-input" id="signupEmail" placeholder="Email" autocomplete="email" />
+      <input type="password" class="auth-input" id="signupPassword" placeholder="Password (min 6 characters)" autocomplete="new-password" />
+      <input type="password" class="auth-input" id="signupPassword2" placeholder="Confirm password" autocomplete="new-password" />
+      <button class="btn auth-btn" onclick="doSignup()">Sign Up</button>
+      <div class="auth-links">
+        <a href="#" onclick="showAuthView('login'); return false;">Already have an account? Log in</a>
+      </div>
+    </div>
+
+    <div id="forgotForm" style="display:none;">
+      <input type="email" class="auth-input" id="forgotEmail" placeholder="Your email" autocomplete="email" />
+      <button class="btn auth-btn" onclick="doForgotPassword()">Send Reset Link</button>
+      <div class="auth-links">
+        <a href="#" onclick="showAuthView('login'); return false;">Back to log in</a>
+      </div>
+    </div>
+
+    <div class="auth-loading" id="authLoading" style="display:none;">Please wait…</div>
+  </div>
+
+  <p class="landing-desc">
+    Add students, enter subject scores, and instantly get averages, letter grades, and
+    class rankings — no installation, no spreadsheet, nothing to configure. Sign in once
+    and your results are saved to your account, so you can pick up right where you left
+    off from any device.
+  </p>
+
+  <div class="landing-features">
+    <span class="chip">📊 Auto Average &amp; Grade</span>
+    <span class="chip">🏆 Auto Ranking</span>
+    <span class="chip">📚 Single or Both Semesters</span>
+    <span class="chip">☁️ Cloud Sync — any device</span>
+    <span class="chip">📄 Export as PDF</span>
+    <span class="chip">🎨 Dark / Light Mode</span>
+  </div>
+
+  <div class="landing-social socials">
+    <a href="https://heni-john-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9s1.3-6.5 3.8-9z"/></svg> Portfolio</a>
+    <a href="https://t.me/Heni_John" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 240 240" width="15" height="15" fill="currentColor" style="flex-shrink:0"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path fill="#fff" d="M175.9 82.1l-19.8 93.4c-1.5 6.7-5.4 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.2 3l2.2-31.3 57-51.5c2.5-2.2-.5-3.4-3.8-1.2l-70.5 44.4-30.4-9.5c-6.6-2.1-6.7-6.6 1.4-9.7l118.9-45.8c5.5-2 10.3 1.3 8.3 9.3z"/></svg> Telegram</a>
+    <a href="https://github.com/HeniJohn" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="flex-shrink:0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.3.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.8 11.8 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2.7 1.7.2 3 .1 3.3.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg> GitHub</a>
+    <a href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" style="flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="4" fill="#FF0000"/><path d="M9.8 8.4v7.2L15.8 12z" fill="#fff"/></svg> YouTube</a>
+    <a href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg> Instagram</a>
+  </div>
+  </div>
+</div>
+
+<div id="appWrap" style="display:none;">
+
+<div class="user-bar" id="userBar">
+  <span id="userEmailLabel"></span>
+  <button class="btn tiny-btn" onclick="doSignOut()">Sign Out</button>
+</div>
 
 <div class="top-bar">
   <div class="menu-wrap">
@@ -549,6 +695,8 @@
 </div>
 
 <div class="saved-badge" id="savedBadge">✓ Saved automatically</div>
+
+</div><!-- /appWrap -->
 
 <script>
 const DEFAULT_GRADE_SCALE = [
@@ -951,6 +1099,167 @@ document.addEventListener("click", (e) => {
 });
 
 render();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+// ---- Firebase setup ----
+const firebaseConfig = {
+  apiKey: "AIzaSyDYmMbxeO45rO_ov07pM6IAkEpG9w2_Hjg",
+  authDomain: "student-result-manager-6936c.firebaseapp.com",
+  projectId: "student-result-manager-6936c",
+  storageBucket: "student-result-manager-6936c.firebasestorage.app",
+  messagingSenderId: "966643916525",
+  appId: "1:966643916525:web:e528f39ddf9bf38d19b6e4",
+  measurementId: "G-GHCL6GRBFZ"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let cloudSaveTimeout = null;
+let suppressCloudSave = false; // true while cloud data is being loaded in, so we don't immediately re-save it
+
+function showAuthView(view){
+  document.getElementById("authError").style.display = "none";
+  document.getElementById("authMsg").style.display = "none";
+  document.getElementById("loginForm").style.display = view === "login" ? "block" : "none";
+  document.getElementById("signupForm").style.display = view === "signup" ? "block" : "none";
+  document.getElementById("forgotForm").style.display = view === "forgot" ? "block" : "none";
+}
+
+function showAuthError(msg){
+  const el = document.getElementById("authError");
+  el.textContent = msg;
+  el.style.display = "block";
+  document.getElementById("authMsg").style.display = "none";
+}
+function showAuthMsg(msg){
+  const el = document.getElementById("authMsg");
+  el.textContent = msg;
+  el.style.display = "block";
+  document.getElementById("authError").style.display = "none";
+}
+function setAuthLoading(on){
+  document.getElementById("authLoading").style.display = on ? "block" : "none";
+}
+
+function friendlyAuthError(err){
+  const code = err && err.code ? err.code : "";
+  if (code.includes("invalid-email")) return "That email address looks invalid.";
+  if (code.includes("user-not-found")) return "No account found with that email.";
+  if (code.includes("wrong-password") || code.includes("invalid-credential")) return "Incorrect email or password.";
+  if (code.includes("email-already-in-use")) return "An account with that email already exists.";
+  if (code.includes("weak-password")) return "Password should be at least 6 characters.";
+  if (code.includes("too-many-requests")) return "Too many attempts. Please wait a bit and try again.";
+  if (code.includes("network-request-failed")) return "Network error. Check your connection and try again.";
+  return (err && err.message) ? err.message : "Something went wrong. Please try again.";
+}
+
+function doLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  if (!email || !password){ showAuthError("Please enter your email and password."); return; }
+  setAuthLoading(true);
+  auth.signInWithEmailAndPassword(email, password)
+    .catch(err => showAuthError(friendlyAuthError(err)))
+    .finally(() => setAuthLoading(false));
+}
+
+function doSignup(){
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const password2 = document.getElementById("signupPassword2").value;
+  if (!email || !password){ showAuthError("Please fill in all fields."); return; }
+  if (password.length < 6){ showAuthError("Password should be at least 6 characters."); return; }
+  if (password !== password2){ showAuthError("Passwords don't match."); return; }
+  setAuthLoading(true);
+  auth.createUserWithEmailAndPassword(email, password)
+    .catch(err => showAuthError(friendlyAuthError(err)))
+    .finally(() => setAuthLoading(false));
+}
+
+function doForgotPassword(){
+  const email = document.getElementById("forgotEmail").value.trim();
+  if (!email){ showAuthError("Please enter your email address."); return; }
+  setAuthLoading(true);
+  auth.sendPasswordResetEmail(email)
+    .then(() => showAuthMsg("Reset link sent! Check your email inbox (and spam folder)."))
+    .catch(err => showAuthError(friendlyAuthError(err)))
+    .finally(() => setAuthLoading(false));
+}
+
+function doSignOut(){
+  auth.signOut();
+}
+
+// ---- Cloud data sync ----
+function userDocRef(){
+  return db.collection("users").doc(currentUser.uid);
+}
+
+// Wrap the original localStorage-only saveData so it also pushes to Firestore.
+const originalSaveData = window.saveData;
+window.saveData = function(){
+  originalSaveData();
+  if (!currentUser || suppressCloudSave) return;
+  clearTimeout(cloudSaveTimeout);
+  cloudSaveTimeout = setTimeout(() => {
+    userDocRef().set({
+      mode, uid, students, subjects, GRADE_SCALE,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(err => console.warn("Cloud save failed:", err));
+  }, 800);
+};
+
+function loadCloudData(){
+  setAuthLoading(true);
+  userDocRef().get().then(docSnap => {
+    suppressCloudSave = true;
+    if (docSnap.exists){
+      const data = docSnap.data();
+      if (data.students && data.subjects && data.subjects[1] && data.subjects[2]){
+        students = data.students;
+        subjects = data.subjects;
+        uid = data.uid || uid;
+        mode = data.mode === "two" ? "two" : "single";
+        if (data.GRADE_SCALE && data.GRADE_SCALE.length) GRADE_SCALE = data.GRADE_SCALE;
+      }
+    } else {
+      // First time this account has logged in anywhere — upload whatever is
+      // currently in this browser as the starting point for this account.
+      userDocRef().set({
+        mode, uid, students, subjects, GRADE_SCALE,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(err => console.warn("Initial cloud save failed:", err));
+    }
+    render();
+    suppressCloudSave = false;
+  }).catch(err => {
+    console.warn("Cloud load failed:", err);
+    showAuthError("Could not load your saved data. Check your connection and reload the page.");
+  }).finally(() => setAuthLoading(false));
+}
+
+// ---- Auth state ----
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  if (user){
+    document.getElementById("authOverlay").style.display = "none";
+    document.getElementById("appWrap").style.display = "block";
+    document.getElementById("userEmailLabel").textContent = user.email;
+    document.getElementById("userBar").style.display = "flex";
+    loadCloudData();
+  } else {
+    document.getElementById("appWrap").style.display = "none";
+    document.getElementById("authOverlay").style.display = "flex";
+    document.getElementById("userBar").style.display = "none";
+    showAuthView("login");
+  }
+});
 </script>
 </body>
 </html>
