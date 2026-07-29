@@ -1055,7 +1055,7 @@ function updateModeUI(){
 }
 
 function getGrade(avg){
-  if (avg === null) return { grade: "-", color: "#5b6b63" };
+  if (avg === null || !Number.isFinite(avg)) return { grade: "-", color: "#5b6b63" };
   for (const g of GRADE_SCALE) if (avg >= g.min) return g;
   return GRADE_SCALE[GRADE_SCALE.length - 1];
 }
@@ -1116,7 +1116,7 @@ function resetGradeScale(){
 function computeSemAvg(stu, sem){
   const subs = subjects[sem];
   const scoresObj = stu.scores[sem] || {};
-  const vals = subs.map(s => scoresObj[s.id]).filter(v => typeof v === "number");
+  const vals = subs.map(s => scoresObj[s.id]).filter(v => typeof v === "number" && Number.isFinite(v));
   return vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : null;
 }
 
@@ -1138,7 +1138,7 @@ function computeRows(){
     }
     return { ...stu, avg1, avg2, overall };
   });
-  const ranked = rows.filter(r => r.overall !== null).sort((a,b) => b.overall - a.overall);
+  const ranked = rows.filter(r => r.overall !== null && Number.isFinite(r.overall)).sort((a,b) => b.overall - a.overall);
   const rankMap = new Map();
   let lastAvg = null, lastRank = 0;
   ranked.forEach((r,i) => {
@@ -1296,8 +1296,9 @@ function setScore(studentId, sem, subjectId, value){
   const stu = students.find(s => s.id === studentId);
   if (!stu) return;
   if (!stu.scores[sem]) stu.scores[sem] = {};
-  if (value === ""){ delete stu.scores[sem][subjectId]; }
-  else { stu.scores[sem][subjectId] = Math.max(0, Math.min(100, Number(value))); }
+  const n = Number(value);
+  if (value === "" || !Number.isFinite(n)){ delete stu.scores[sem][subjectId]; }
+  else { stu.scores[sem][subjectId] = Math.max(0, Math.min(100, n)); }
   render();
 }
 
