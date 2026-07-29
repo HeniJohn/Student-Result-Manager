@@ -1,7 +1,7 @@
 // Minimal service worker: makes the app installable and lets the
 // shell (HTML/CSS/JS) open even with a weak or no connection.
 // Firebase login/data still needs internet to actually work.
-const CACHE_NAME = "srm-cache-v1";
+const CACHE_NAME = "srm-cache-v2";
 const CORE_ASSETS = [
   "./",
   "./index.html",
