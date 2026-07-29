@@ -6,6 +6,13 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.google.com https://www.recaptcha.net; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google.com; frame-src https://student-result-manager-6936c.firebaseapp.com https://www.google.com https://recaptcha.google.com; img-src 'self' data: https://www.gstatic.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self';">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Student Result Manager — Average, Grade & Rank</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B1029">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ResultMgr">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1363,6 +1370,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+// Cache Firestore data on the device (IndexedDB) so that after the FIRST
+// successful online load, the same data can be read again later even
+// with no internet connection.
+db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+  console.warn("Offline persistence not enabled:", err.code);
+});
 
 let currentUser = null;
 let cloudSaveTimeout = null;
@@ -1533,6 +1546,13 @@ auth.onAuthStateChanged(user => {
     showAuthView("login");
   }
 });
+
+// ---- PWA: register service worker so the site can be installed as an app ----
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(err => console.warn("SW registration failed:", err));
+  });
+}
 </script>
 </body>
 </html>
