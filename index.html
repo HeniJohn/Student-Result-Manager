@@ -556,6 +556,16 @@
       </div>
     </div>
 
+    <div id="verifyForm" style="display:none;">
+      <p class="auth-sub" id="verifyEmailLabel" style="margin-top:0;"></p>
+      <p class="auth-sub" data-i18n="verifyMsg">We've sent a verification link to that address. Please open it, then come back and tap "I've verified".</p>
+      <button class="btn auth-btn" onclick="doCheckVerified()" data-i18n="checkVerifiedBtn">I've verified — continue</button>
+      <button class="btn auth-btn" style="opacity:.85;" id="resendVerifyBtn" onclick="doResendVerification()" data-i18n="resendBtn">Resend verification email</button>
+      <div class="auth-links">
+        <a href="#" onclick="doSignOut(); return false;" data-i18n="backToLogin">Back to log in</a>
+      </div>
+    </div>
+
     <div class="auth-loading" id="authLoading" style="display:none;" data-i18n="pleaseWait">Please wait…</div>
   </div>
 
@@ -875,6 +885,11 @@ const I18N = {
     errGeneric: "Something went wrong. Please try again.",
     resetLinkSent: "If an account exists for that email, a reset link has been sent. Check your inbox (and spam folder).",
     couldNotLoadData: "Could not load your saved data. Check your connection and reload the page.",
+    verifyMsg: "We've sent a verification link to that address. Open it, then come back and tap \"I've verified\". Check your spam folder if it doesn't arrive in a few minutes.",
+    checkVerifiedBtn: "I've verified — continue",
+    resendBtn: "Resend verification email",
+    resendSent: "Verification email sent. Check your inbox (and spam folder).",
+    stillNotVerified: "That email isn't verified yet. Open the link we sent you first.",
   },
   om: {
     appTitle: "Bulchiinsa Bu'aa Barattootaa",
@@ -940,6 +955,11 @@ const I18N = {
     errNetwork: "Rakkoo network. Hidhata kee ilaalii irra deebi'ii yaali.",
     errGeneric: "Wanti tokko dogoggora ta'e. Maaloo irra deebi'ii yaali.",
     resetLinkSent: "Imeelicha kanaan herregni yoo jiraate, hidhaan haaromsaa ergameera. Saanduqa imeelii kee (fi spam) ilaali.",
+    verifyMsg: "Hidhaan mirkaneessaa gara teessoo kanaatti ergameera. Bani, ergasii deebi'ii \"Mirkaneesseera\" jedhu tuqi. Yoo daqiiqaa muraasa keessatti si hin geenye, saanduqa spam ilaali.",
+    checkVerifiedBtn: "Mirkaneesseera — itti fufi",
+    resendBtn: "Imeelii mirkaneessaa irra deebi'ii ergi",
+    resendSent: "Imeeliin mirkaneessaa ergameera. Saanduqa imeelii kee (fi spam) ilaali.",
+    stillNotVerified: "Imeelichi kun amma mirkanaa'aa hin jiru. Duraan dursii hidhaa erginee siif jiru banii.",
     couldNotLoadData: "Odeeffannoo olkaa'ame kee fe'uu hin dandeenye. Hidhata kee ilaalii fuula kana haaromsi.",
   },
   am: {
@@ -1006,6 +1026,11 @@ const I18N = {
     errNetwork: "የኔትወርክ ስህተት። ግንኙነትዎን ያረጋግጡና እንደገና ይሞክሩ።",
     errGeneric: "የሆነ ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
     resetLinkSent: "ለዚያ ኢሜይል መለያ ካለ፣ የዳግም ማስጀመሪያ ማገናኛ ተልኳል። የገቢ መልእክት ሳጥንዎን (እና የስፓም ማህደሩን) ያረጋግጡ።",
+    verifyMsg: "ወደዚያ አድራሻ የማረጋገጫ ማገናኛ ልከናል። ይክፈቱት፣ ከዚያ ተመልሰው «አረጋግጫለሁ» የሚለውን ይንኩ። በጥቂት ደቂቃዎች ውስጥ ካልደረሰዎት የስፓም ማህደሩን ያረጋግጡ።",
+    checkVerifiedBtn: "አረጋግጫለሁ — ቀጥል",
+    resendBtn: "የማረጋገጫ ኢሜይል እንደገና ላክ",
+    resendSent: "የማረጋገጫ ኢሜይል ተልኳል። የገቢ መልእክት ሳጥንዎን (እና የስፓም ማህደሩን) ያረጋግጡ።",
+    stillNotVerified: "ያ ኢሜይል እስካሁን አልተረጋገጠም። መጀመሪያ የላክንልዎትን ማገናኛ ይክፈቱ።",
     couldNotLoadData: "የተቀመጠ መረጃዎን መጫን አልተቻለም። ግንኙነትዎን ያረጋግጡና ገጹን ያድሱ።",
   },
 };
@@ -1603,6 +1628,7 @@ function showAuthView(view){
   document.getElementById("loginForm").style.display = view === "login" ? "block" : "none";
   document.getElementById("signupForm").style.display = view === "signup" ? "block" : "none";
   document.getElementById("forgotForm").style.display = view === "forgot" ? "block" : "none";
+  document.getElementById("verifyForm").style.display = view === "verify" ? "block" : "none";
 }
 
 function showAuthError(msg){
@@ -1657,6 +1683,44 @@ function doSignup(){
   if (password !== password2){ showAuthError(t("errPasswordsDontMatch")); return; }
   setAuthLoading(true);
   auth.createUserWithEmailAndPassword(email, password)
+    .then(cred => cred.user.sendEmailVerification())
+    .catch(err => showAuthError(friendlyAuthError(err)))
+    .finally(() => setAuthLoading(false));
+  // Note: what happens after this (showing the "verify your email" screen
+  // instead of the app) is handled centrally in onAuthStateChanged below,
+  // since that also has to cover users who sign up, close the tab, and
+  // come back later still unverified.
+}
+
+// Re-sends the verification link to the currently signed-in (but
+// unverified) user. Firebase itself rate-limits this endpoint, so no
+// extra throttling is needed here — a "too-many-requests" error just
+// surfaces the normal friendly message.
+function doResendVerification(){
+  if (!currentUser) return;
+  setAuthLoading(true);
+  currentUser.sendEmailVerification()
+    .then(() => showAuthMsg(t("resendSent")))
+    .catch(err => showAuthError(friendlyAuthError(err)))
+    .finally(() => setAuthLoading(false));
+}
+
+// Re-fetches the user's record from Firebase to pick up a verification
+// that just happened (Firebase doesn't push this change to the client
+// automatically — it has to be asked for via reload()).
+function doCheckVerified(){
+  if (!currentUser) return;
+  setAuthLoading(true);
+  currentUser.reload()
+    .then(() => {
+      if (currentUser.emailVerified){
+        document.getElementById("authOverlay").style.display = "none";
+        document.getElementById("appWrap").style.display = "block";
+        loadCloudData();
+      } else {
+        showAuthError(t("stillNotVerified"));
+      }
+    })
     .catch(err => showAuthError(friendlyAuthError(err)))
     .finally(() => setAuthLoading(false));
 }
@@ -1733,13 +1797,28 @@ function loadCloudData(){
 }
 
 // ---- Auth state ----
+// Security note: Firebase's createUserWithEmailAndPassword only checks that
+// an address is well-formed — it never confirms the person actually owns
+// or can read that inbox. Gmail (and most providers) doesn't expose an API
+// to check "does this address exist" ahead of time, so the only reliable
+// way to confirm a real, reachable email is to email a one-time link to it
+// and require that link be opened before granting access. That's what the
+// emailVerified check below enforces: signed-in-but-unverified users are
+// routed to a "verify your email" screen instead of the app, so an account
+// created with a mistyped or nonexistent address can't be used until its
+// owner proves they can receive mail there.
 auth.onAuthStateChanged(user => {
   currentUser = user;
-  if (user){
+  if (user && user.emailVerified){
     document.getElementById("authOverlay").style.display = "none";
     document.getElementById("appWrap").style.display = "block";
     loadCloudData();
     if (typeof updateNetStatus === "function") updateNetStatus();
+  } else if (user && !user.emailVerified){
+    document.getElementById("appWrap").style.display = "none";
+    document.getElementById("authOverlay").style.display = "flex";
+    document.getElementById("verifyEmailLabel").textContent = user.email || "";
+    showAuthView("verify");
   } else {
     document.getElementById("appWrap").style.display = "none";
     document.getElementById("authOverlay").style.display = "flex";
